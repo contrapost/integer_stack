@@ -180,9 +180,7 @@ class IntegerStackGeneric extends IntegerStack {
 		if (!stack.isEmpty()) {
 			return stack.remove(stack.size() - 1); // time << 1
 		} else
-			throw new NoSuchElementException("IntegerStackGeneric: pop()"); // time
-																			// <<
-																			// 1
+			throw new NoSuchElementException("IntegerStackGeneric: pop()"); // time << 1
 	} // time << 1
 
 	public int size() {
@@ -194,9 +192,12 @@ class IntegerStackGeneric extends IntegerStack {
 	}
 
 	public void reverse() {
-		for (int i = 0, j = stack.size() - 1; i < j; i++) {
-			stack.add(i, stack.remove(j));
-		}
+
+		for (int i = 0; i < size() / 2; i++) {
+		    int temp = stack.get(i);
+		    stack.set(i, stack.get(size() - i - 1));
+		    stack.set(size() - i - 1, temp);
+        }
 	}
 
 	public Iterator<Integer> iterator() {
@@ -222,16 +223,16 @@ class IntegerStackGeneric extends IntegerStack {
 
 class IntegerStackPrimitive extends IntegerStack {
 
-	int[] stack;
-	int size = 0;
+	private int[] stack;
+	private int size = 0;
 
 	IntegerStackPrimitive() {
-		stack = new int[1];
+		stack = new int[0];
 	}
 
 	public void push(int x) {
 		if (size == stack.length)
-			resize(2 * stack.length); // time << 1 
+			resize(size == 0 ? 1 : 2 * stack.length); // time << 1
 			/*The push methods calls resize when number of pushes is 2, 3, 5, 9, 17, 33
 			  and so on 
 			 (i.e. 1 + (2+1) +(2^2 + 1) + (2^3 + 1) + ... + (2^k + 1) = 
@@ -252,7 +253,7 @@ class IntegerStackPrimitive extends IntegerStack {
 	} // time << size
 
 	public int pop() throws NoSuchElementException {
-		if (!(size == 0)) {
+		if (size != 0) {
 			int element = stack[--size]; // time << 1
 			if (size > 0 && size == stack.length / 4)
 				resize(stack.length / 2); // time << 1
@@ -268,8 +269,8 @@ class IntegerStackPrimitive extends IntegerStack {
 	}
 
 	public boolean contains(int x) {
-		for (int i : stack)
-			if (i == x)
+		for (int i = 0; i < size; i++)
+			if (stack[i] == x)
 				return true;
 		return false;
 	}
